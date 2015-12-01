@@ -11,10 +11,21 @@ android:layout_height="match_parent"
         android:layout_marginLeft="14dp"
         android:layout_marginRight="14dp">
 
-        <ImageView
+        <!--<ImageView-->
+            <!--android:layout_width="30dp"-->
+            <!--android:layout_height="30dp"-->
+            <!--android:id="@+id/ivAvatar"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:layout_alignParentLeft="true"-->
+            <!--android:layout_alignParentStart="true" />-->
+
+        <com.makeramen.roundedimageview.RoundedImageView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/ivAvatar"
+            android:scaleType="fitCenter"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:id="@+id/ivAvatar"
+            app:riv_corner_radius="30dp"
             android:layout_centerVertical="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" />

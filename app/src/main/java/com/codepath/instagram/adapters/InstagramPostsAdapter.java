@@ -104,7 +104,7 @@ public class InstagramPostsAdapter extends RecyclerView.Adapter<InstagramPostsAd
 
     private void setCaption(PostItemViewHolder holder, InstagramPost post) {
         if (post.caption == null || post.caption.length() < 1) {
-            holder.captionTextView.setVisibility(View.INVISIBLE);
+            holder.captionTextView.setVisibility(View.GONE);
             return;
         }
 
