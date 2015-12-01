@@ -43,6 +43,7 @@ public class HomeActivity extends AppCompatActivity {
 
         // Lookup the recyclerview in activity layout
         rvInstagramPosts = (RecyclerView) findViewById(R.id.rvInstagramPosts);
+
         rvInstagramPosts.addItemDecoration(
                 new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST)
         );

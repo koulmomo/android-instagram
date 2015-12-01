@@ -11,6 +11,7 @@ import android.text.Layout;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.text.SpannedString;
 import android.text.format.DateUtils;
 import android.text.style.ForegroundColorSpan;
 import android.util.DisplayMetrics;
@@ -80,15 +81,17 @@ public class InstagramPostsAdapter extends RecyclerView.Adapter<InstagramPostsAd
     public void onBindViewHolder(PostItemViewHolder holder, int position) {
         InstagramPost post = instagramPosts.get(position);
 
-        ImageView avatarImageView = holder.avatarImageView;
-        Picasso.with(avatarImageView.getContext())
-                .load(post.user.profilePictureUrl)
-                .placeholder(R.drawable.gray_oval)
-                .fit()
-                .into(avatarImageView);
+        setAvatar(holder, post);
 
         holder.userNameTextView.setText(post.user.userName);
 
+        setPostTimestamp(holder, post);
+        setInstagramPic(holder, post);
+        setLikes(holder, post);
+        setCaption(holder, post);
+    }
+
+    private void setPostTimestamp(PostItemViewHolder holder, InstagramPost post) {
         holder.timestampTextView.setText(
                 DateUtils.getRelativeTimeSpanString(
                         post.createdTime * 1000,
@@ -96,10 +99,15 @@ public class InstagramPostsAdapter extends RecyclerView.Adapter<InstagramPostsAd
                         DateUtils.SECOND_IN_MILLIS
                 ).toString()
         );
+    }
 
-        setInstagramPic(holder, post);
-        setLikes(holder, post);
-        setCaption(holder, post);
+    private void setAvatar(PostItemViewHolder holder, InstagramPost post) {
+        ImageView avatarImageView = holder.avatarImageView;
+        Picasso.with(avatarImageView.getContext())
+                .load(post.user.profilePictureUrl)
+                .placeholder(R.drawable.gray_oval)
+                .fit()
+                .into(avatarImageView);
     }
 
     private void setCaption(PostItemViewHolder holder, InstagramPost post) {
@@ -109,10 +117,19 @@ public class InstagramPostsAdapter extends RecyclerView.Adapter<InstagramPostsAd
         }
 
         holder.captionTextView.setVisibility(View.VISIBLE);
+        int userNameLength = post.user.userName.length();
 
         ForegroundColorSpan blueForeGroundColorSpan = new ForegroundColorSpan(
                 holder.captionTextView.getContext().getResources().getColor(R.color.blue_text));
 
+        // prepend the user name to the caption
+        SpannableString userNamePrefix = new SpannableString(post.user.userName);
+        userNamePrefix.setSpan(blueForeGroundColorSpan, 0, userNameLength, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+
+        SpannableStringBuilder sbb = new SpannableStringBuilder(userNamePrefix);
+        sbb.append(" "); // add a space after the user name
+
+        // color mentions inside the caption
         SpannableString caption = new SpannableString(post.caption);
 
         int startIndex = post.caption.indexOf(post.user.userName);
@@ -121,13 +138,16 @@ public class InstagramPostsAdapter extends RecyclerView.Adapter<InstagramPostsAd
         if (startIndex > -1) {
             caption.setSpan(blueForeGroundColorSpan,
                     startIndex,
-                    startIndex + post.user.userName.length(),
+                    startIndex + userNameLength,
                     Spanned.SPAN_INCLUSIVE_EXCLUSIVE
             );
         }
 
-        holder.captionTextView.setText(caption);
+        // add the caption
+        sbb.append(caption);
 
+        // set the text of the view
+        holder.captionTextView.setText(sbb, TextView.BufferType.NORMAL);
     }
 
     private void setLikes(PostItemViewHolder holder, InstagramPost post) {
@@ -152,9 +172,7 @@ public class InstagramPostsAdapter extends RecyclerView.Adapter<InstagramPostsAd
 
         Picasso.with(context)
                 .load(post.image.imageUrl)
-                // TODO: instead of resize, scale Y
                 .placeholder(R.drawable.gray_rectangle)
-                .resize(imageWidth, 0)
                 .into(postPicImageView);
     }
 
