@@ -26,7 +26,7 @@ Last user story is almost complete minus handling images with bad aspect ratios
 
 ## Video Walkthrough
 
- ![video walkthrough](https://cloud.githubusercontent.com/assets/983861/11492251/3f331a0a-979f-11e5-9e8a-1432090157c3.gif)
+ ![video walkthrough](https://cloud.githubusercontent.com/assets/983861/11492464/b86c3d2c-97a2-11e5-9f63-c84dbfa9887d.gif)
 
 ## License
 
