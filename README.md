@@ -19,7 +19,7 @@ For each post displayed, user can see the following details:
 * [x] Display a nice default placeholder graphic for each image during loading.
 * [x] The following user story is optional:
 
-* [] Display each post with the same style and proportions as the real Instagram.
+* [ ] Display each post with the same style and proportions as the real Instagram.
 
 Last user story is almost complete minus handling images with bad aspect ratios 
 (though they are still full bleed).
