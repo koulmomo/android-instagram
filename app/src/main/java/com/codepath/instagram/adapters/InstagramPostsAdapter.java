@@ -1,31 +1,19 @@
 package com.codepath.instagram.adapters;
 
-import android.app.ActionBar;
 import android.content.Context;
-import android.graphics.Point;
-import android.graphics.drawable.Drawable;
-import android.media.Image;
-import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.RecyclerView;
-import android.text.Layout;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
-import android.text.SpannedString;
 import android.text.format.DateUtils;
 import android.text.style.ForegroundColorSpan;
-import android.util.DisplayMetrics;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.codepath.instagram.R;
-import com.codepath.instagram.helpers.Constants;
 import com.codepath.instagram.helpers.DeviceDimensionsHelper;
 import com.codepath.instagram.helpers.Utils;
 import com.codepath.instagram.models.InstagramPost;
