@@ -5,19 +5,24 @@ import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.codepath.instagram.R;
 import com.codepath.instagram.helpers.DeviceDimensionsHelper;
 import com.codepath.instagram.helpers.Utils;
+import com.codepath.instagram.models.InstagramComment;
 import com.codepath.instagram.models.InstagramPost;
 import com.squareup.picasso.Picasso;
+
+import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -26,29 +31,38 @@ import java.util.List;
  */
 public class InstagramPostsAdapter extends RecyclerView.Adapter<InstagramPostsAdapter.PostItemViewHolder> {
     private List<InstagramPost> instagramPosts;
+    private final static String VIEW_ALL_COMMENTS_TEMPLATE = "View all %d comments";
+
+    private final static int COMMENTS_THRESHOLD = 2;
 
     public static class PostItemViewHolder extends RecyclerView.ViewHolder {
-        ImageView avatarImageView;
-        TextView userNameTextView;
-        TextView timestampTextView;
+        ImageView mAvatarImageView;
+        TextView mUserNameTextView;
+        TextView mTimestampTextView;
 
-        ImageView postPicImageView;
+        ImageView mPostPicImageView;
 
-        TextView likesTextView;
+        TextView mLikesTextView;
 
-        TextView captionTextView;
+        TextView mCaptionTextView;
+
+        TextView mViewAllCommentsTextView;
+
+        LinearLayout mCommentsLinearLayout;
 
         public PostItemViewHolder(View itemView) {
             super(itemView);
 
-            avatarImageView = (ImageView) itemView.findViewById(R.id.ivAvatar);
-            userNameTextView = (TextView) itemView.findViewById(R.id.tvUserName);
-            timestampTextView = (TextView) itemView.findViewById(R.id.tvTimestamp);
+            mAvatarImageView = (ImageView) itemView.findViewById(R.id.ivAvatar);
+            mUserNameTextView = (TextView) itemView.findViewById(R.id.tvUserName);
+            mTimestampTextView = (TextView) itemView.findViewById(R.id.tvTimestamp);
 
-            postPicImageView = (ImageView) itemView.findViewById(R.id.ivPostPic);
+            mPostPicImageView = (ImageView) itemView.findViewById(R.id.ivPostPic);
 
-            likesTextView = (TextView) itemView.findViewById(R.id.tvLikes);
-            captionTextView = (TextView) itemView.findViewById(R.id.tvCaption);
+            mLikesTextView = (TextView) itemView.findViewById(R.id.tvLikes);
+            mCaptionTextView = (TextView) itemView.findViewById(R.id.tvCaption);
+            mViewAllCommentsTextView = (TextView) itemView.findViewById(R.id.tvViewAllComments);
+            mCommentsLinearLayout = (LinearLayout) itemView.findViewById(R.id.llComments);
         }
     }
 
@@ -61,6 +75,7 @@ public class InstagramPostsAdapter extends RecyclerView.Adapter<InstagramPostsAd
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 
         View postView = inflater.inflate(R.layout.layout_item_post, parent, false);
+        // inflater.inflate(R.layout.layout_item_text_comment, (ViewGroup) postView.findViewById(R.id.llComments), false);
 
         return new InstagramPostsAdapter.PostItemViewHolder(postView);
     }
@@ -71,16 +86,55 @@ public class InstagramPostsAdapter extends RecyclerView.Adapter<InstagramPostsAd
 
         setAvatar(holder, post);
 
-        holder.userNameTextView.setText(post.user.userName);
+        holder.mUserNameTextView.setText(post.user.userName);
 
         setPostTimestamp(holder, post);
         setInstagramPic(holder, post);
         setLikes(holder, post);
         setCaption(holder, post);
+
+        setComments(holder, post);
+    }
+
+    private void setComments(PostItemViewHolder holder, InstagramPost post) {
+        holder.mCommentsLinearLayout.removeAllViews();
+
+        if (post.commentsCount <= COMMENTS_THRESHOLD) {
+            holder.mViewAllCommentsTextView.setVisibility(View.INVISIBLE);
+        } else {
+            holder.mViewAllCommentsTextView.setText(String.format(VIEW_ALL_COMMENTS_TEMPLATE, post.commentsCount));
+            holder.mViewAllCommentsTextView.setVisibility(View.VISIBLE);
+        }
+
+        Context context = holder.mCommentsLinearLayout.getContext();
+
+        for (int i = 0; i < COMMENTS_THRESHOLD; i++) {
+            InstagramComment comment = post.comments.get(i);
+
+            TextView commentView = (TextView) LinearLayout.inflate(context, R.layout.layout_item_text_comment, null);
+            commentView.setText(prependWithBlueUsername(context, comment.user.userName, comment.text));
+
+            holder.mCommentsLinearLayout.addView(commentView);
+        }
+    }
+
+    public static ForegroundColorSpan getBlueForegroundColorSpan(Context context) {
+        return new ForegroundColorSpan(context.getResources().getColor(R.color.blue_text));
+    }
+
+    public static SpannableStringBuilder prependWithBlueUsername(Context context, String username, CharSequence suffix) {
+        SpannableString userNamePrefix = new SpannableString(username);
+        userNamePrefix.setSpan(getBlueForegroundColorSpan(context), 0, username.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+
+        SpannableStringBuilder ssb = new SpannableStringBuilder(userNamePrefix);
+        ssb.append(" ");
+        ssb.append(suffix);
+
+        return ssb;
     }
 
     private void setPostTimestamp(PostItemViewHolder holder, InstagramPost post) {
-        holder.timestampTextView.setText(
+        holder.mTimestampTextView.setText(
                 DateUtils.getRelativeTimeSpanString(
                         post.createdTime * 1000,
                         System.currentTimeMillis(),
@@ -90,7 +144,7 @@ public class InstagramPostsAdapter extends RecyclerView.Adapter<InstagramPostsAd
     }
 
     private void setAvatar(PostItemViewHolder holder, InstagramPost post) {
-        ImageView avatarImageView = holder.avatarImageView;
+        ImageView avatarImageView = holder.mAvatarImageView;
         Picasso.with(avatarImageView.getContext())
                 .load(post.user.profilePictureUrl)
                 .placeholder(R.drawable.gray_oval)
@@ -99,52 +153,38 @@ public class InstagramPostsAdapter extends RecyclerView.Adapter<InstagramPostsAd
     }
 
     private void setCaption(PostItemViewHolder holder, InstagramPost post) {
-        if (post.caption == null || post.caption.length() < 1) {
-            holder.captionTextView.setVisibility(View.GONE);
+        if (TextUtils.isEmpty(post.caption)) {
+            holder.mCaptionTextView.setVisibility(View.GONE);
             return;
         }
 
-        holder.captionTextView.setVisibility(View.VISIBLE);
-        int userNameLength = post.user.userName.length();
-
-        ForegroundColorSpan blueForeGroundColorSpan = new ForegroundColorSpan(
-                holder.captionTextView.getContext().getResources().getColor(R.color.blue_text));
-
-        // prepend the user name to the caption
-        SpannableString userNamePrefix = new SpannableString(post.user.userName);
-        userNamePrefix.setSpan(blueForeGroundColorSpan, 0, userNameLength, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-
-        SpannableStringBuilder sbb = new SpannableStringBuilder(userNamePrefix);
-        sbb.append(" "); // add a space after the user name
+        Context context = holder.mCaptionTextView.getContext();
 
         // color mentions inside the caption
         SpannableString caption = new SpannableString(post.caption);
-
         int startIndex = post.caption.indexOf(post.user.userName);
 
         // TODO: handle multiple mentions
         if (startIndex > -1) {
-            caption.setSpan(blueForeGroundColorSpan,
+            caption.setSpan(getBlueForegroundColorSpan(context),
                     startIndex,
-                    startIndex + userNameLength,
+                    startIndex + post.user.userName.length(),
                     Spanned.SPAN_INCLUSIVE_EXCLUSIVE
             );
         }
 
-        // add the caption
-        sbb.append(caption);
-
         // set the text of the view
-        holder.captionTextView.setText(sbb, TextView.BufferType.NORMAL);
+        holder.mCaptionTextView.setText(prependWithBlueUsername(context, post.user.userName, caption), TextView.BufferType.NORMAL);
+        holder.mCaptionTextView.setVisibility(View.VISIBLE);
     }
 
     private void setLikes(PostItemViewHolder holder, InstagramPost post) {
-        holder.likesTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_heart, 0, 0, 0);
-        holder.likesTextView.setText(Utils.formatNumberForDisplay(post.likesCount) + " likes");
+        holder.mLikesTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_heart, 0, 0, 0);
+        holder.mLikesTextView.setText(Utils.formatNumberForDisplay(post.likesCount) + " likes");
     }
 
     private void setInstagramPic(PostItemViewHolder holder, InstagramPost post) {
-        ImageView postPicImageView = holder.postPicImageView;
+        ImageView postPicImageView = holder.mPostPicImageView;
         Context context = postPicImageView.getContext();
 
         postPicImageView.setMinimumWidth(post.image.imageWidth);
