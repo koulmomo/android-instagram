@@ -1,5 +1,6 @@
 package com.codepath.instagram.activities;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,6 +10,7 @@ import android.view.MenuItem;
 
 import com.codepath.instagram.R;
 import com.codepath.instagram.adapters.InstagramPostsAdapter;
+import com.codepath.instagram.helpers.DividerItemDecoration;
 import com.codepath.instagram.helpers.Utils;
 import com.codepath.instagram.models.InstagramPost;
 
@@ -41,6 +43,9 @@ public class HomeActivity extends AppCompatActivity {
 
         // Lookup the recyclerview in activity layout
         rvInstagramPosts = (RecyclerView) findViewById(R.id.rvInstagramPosts);
+        rvInstagramPosts.addItemDecoration(
+                new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST)
+        );
 
         instagramPostsAdapter = new InstagramPostsAdapter(instagramPosts);
 
