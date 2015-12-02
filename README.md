@@ -6,27 +6,22 @@ This is a Instagram Client Project.
  
 Submitted by: **Mo Kouli**
  
-Time spent: **7** hours spent in total
+Time spent: **8** hours spent in total
 
 
 ## User Stories
 
-* [x] User can scroll through the popular posts from Instagram.
-For each post displayed, user can see the following details:
-* [x] Graphic, Caption, Username, User profile image
-* [x] Relative timestamp, Like count
-* [x] Display each user profile image as a circle.
-* [x] Display a nice default placeholder graphic for each image during loading.
-* [x] The following user story is optional:
+* [x] Connect the app with the Instagram API and get real time data using the android-async-http library library.
+* [x] Show the last 2 comments for each photo
+* [x] User can view all comments for an image within a separate activity.
+* [x] User can share an image to their friends or email it to themselves.
 
-* [ ] Display each post with the same style and proportions as the real Instagram.
-
-Last user story is almost complete minus handling images with bad aspect ratios 
-(though they are still full bleed).
+* [ ] **OPTIONAL**: Use the Butterknife library to remove all findViewById(...) calls.
+* [ ] **OPTIONAL**: Robust error handling, check if internet is available, handle error cases, network failures.
 
 ## Video Walkthrough
 
- ![video walkthrough](https://cloud.githubusercontent.com/assets/983861/11492464/b86c3d2c-97a2-11e5-9f63-c84dbfa9887d.gif)
+ ![video walkthrough](https://cloud.githubusercontent.com/assets/983861/11523398/e0ffbf78-9876-11e5-9e76-114386bddd5b.gif)
 
 ## License
 
