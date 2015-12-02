@@ -23,19 +23,14 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.codepath.instagram.R;
 import com.codepath.instagram.activities.CommentsActivity;
-import com.codepath.instagram.activities.HomeActivity;
-import com.codepath.instagram.helpers.DeviceDimensionsHelper;
 import com.codepath.instagram.helpers.Utils;
 import com.codepath.instagram.models.InstagramComment;
 import com.codepath.instagram.models.InstagramPost;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
-
-import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -118,7 +113,7 @@ public class InstagramPostsAdapter extends RecyclerView.Adapter<InstagramPostsAd
         setComments(holder, post);
     }
 
-    public static Uri getLocalBitmapUri(ImageView imageView) {
+    public static Uri getLocalBitmapUri(ImageView imageView, String uuid) {
         // Extract Bitmap from ImageView drawable
         Drawable drawable = imageView.getDrawable();
         Bitmap bmp = null;
@@ -131,7 +126,7 @@ public class InstagramPostsAdapter extends RecyclerView.Adapter<InstagramPostsAd
         Uri bmpUri = null;
         try {
             File file =  new File(Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_DOWNLOADS), "share_image_" + System.currentTimeMillis() + ".png");
+                    Environment.DIRECTORY_DOWNLOADS), "share_image_" + uuid + ".png");
             file.getParentFile().mkdirs();
             FileOutputStream out = new FileOutputStream(file);
             bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
@@ -157,7 +152,7 @@ public class InstagramPostsAdapter extends RecyclerView.Adapter<InstagramPostsAd
                         switch (item.getItemId()) {
                             case R.id.mnuItemShare:
                                 // Get access to the URI for the bitmap
-                                Uri bmpUri = InstagramPostsAdapter.getLocalBitmapUri(holder.mPostPicImageView);
+                                Uri bmpUri = InstagramPostsAdapter.getLocalBitmapUri(holder.mPostPicImageView, post.mediaId);
                                 if (bmpUri != null) {
                                     // Construct a ShareIntent with link to image
                                     Intent shareIntent = new Intent();
