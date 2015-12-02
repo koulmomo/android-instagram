@@ -96,7 +96,8 @@ android:layout_height="match_parent"
             android:src="@drawable/ic_more_dots"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"/>
+            android:layout_centerVertical="true"
+            android:id="@+id/ivSharePost"/>
 
     </RelativeLayout>
     

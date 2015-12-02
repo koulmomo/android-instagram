@@ -3,6 +3,11 @@ package com.codepath.instagram.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Environment;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
@@ -16,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.codepath.instagram.R;
 import com.codepath.instagram.activities.CommentsActivity;
@@ -24,10 +30,14 @@ import com.codepath.instagram.helpers.DeviceDimensionsHelper;
 import com.codepath.instagram.helpers.Utils;
 import com.codepath.instagram.models.InstagramComment;
 import com.codepath.instagram.models.InstagramPost;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import org.w3c.dom.Text;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -35,7 +45,7 @@ import java.util.List;
  */
 public class InstagramPostsAdapter extends RecyclerView.Adapter<InstagramPostsAdapter.PostItemViewHolder> {
 
-    public static class PostItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public static class PostItemViewHolder extends RecyclerView.ViewHolder {
         ImageView mAvatarImageView;
         TextView mUserNameTextView;
         TextView mTimestampTextView;
@@ -47,6 +57,8 @@ public class InstagramPostsAdapter extends RecyclerView.Adapter<InstagramPostsAd
         TextView mCaptionTextView;
 
         TextView mViewAllCommentsTextView;
+
+        ImageView mSharePostImageView;
 
         LinearLayout mCommentsLinearLayout;
 
@@ -63,11 +75,8 @@ public class InstagramPostsAdapter extends RecyclerView.Adapter<InstagramPostsAd
             mCaptionTextView = (TextView) itemView.findViewById(R.id.tvCaption);
             mViewAllCommentsTextView = (TextView) itemView.findViewById(R.id.tvViewAllComments);
             mCommentsLinearLayout = (LinearLayout) itemView.findViewById(R.id.llComments);
-        }
 
-        @Override
-        public void onClick(View v) {
-
+            mSharePostImageView = (ImageView) itemView.findViewById(R.id.ivSharePost);
         }
     }
 
@@ -104,8 +113,55 @@ public class InstagramPostsAdapter extends RecyclerView.Adapter<InstagramPostsAd
         setInstagramPic(holder, post);
         setLikes(holder, post);
         setCaption(holder, post);
-
         setComments(holder, post);
+    }
+
+    public static Uri getLocalBitmapUri(ImageView imageView) {
+        // Extract Bitmap from ImageView drawable
+        Drawable drawable = imageView.getDrawable();
+        Bitmap bmp = null;
+        if (drawable instanceof BitmapDrawable){
+            bmp = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+        } else {
+            return null;
+        }
+        // Store image to default external storage directory
+        Uri bmpUri = null;
+        try {
+            File file =  new File(Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_DOWNLOADS), "share_image_" + System.currentTimeMillis() + ".png");
+            file.getParentFile().mkdirs();
+            FileOutputStream out = new FileOutputStream(file);
+            bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
+            out.close();
+            bmpUri = Uri.fromFile(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bmpUri;
+    }
+
+    private void setupShareIntent(final PostItemViewHolder holder, final InstagramPost post) {
+        holder.mSharePostImageView.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // Get access to the URI for the bitmap
+                Uri bmpUri = InstagramPostsAdapter.getLocalBitmapUri(holder.mPostPicImageView);
+                if (bmpUri != null) {
+                    // Construct a ShareIntent with link to image
+                    Intent shareIntent = new Intent();
+                    shareIntent.setAction(Intent.ACTION_SEND);
+                    shareIntent.putExtra(Intent.EXTRA_STREAM, bmpUri);
+                    shareIntent.setType("image/*");
+                    // Launch sharing dialog for image
+                    mParentActivity.startActivity(Intent.createChooser(shareIntent, "Share Image"));
+                } else {
+                    // ...sharing failed, handle error
+                }
+
+            }
+        });
     }
 
     private void setComments(final PostItemViewHolder holder, final InstagramPost post) {
@@ -204,23 +260,28 @@ public class InstagramPostsAdapter extends RecyclerView.Adapter<InstagramPostsAd
         holder.mLikesTextView.setText(Utils.formatNumberForDisplay(post.likesCount) + " likes");
     }
 
-    private void setInstagramPic(PostItemViewHolder holder, InstagramPost post) {
+    private void setInstagramPic(final PostItemViewHolder holder, final InstagramPost post) {
         ImageView postPicImageView = holder.mPostPicImageView;
         Context context = postPicImageView.getContext();
 
         postPicImageView.setMinimumWidth(post.image.imageWidth);
         postPicImageView.setMinimumHeight(post.image.imageHeight);
 
-        int imageWidth = postPicImageView.getWidth();
-
-        if (imageWidth <= 0) {
-            imageWidth = DeviceDimensionsHelper.getDisplayWidth(context);
-        }
-
         Picasso.with(context)
                 .load(post.image.imageUrl)
                 .placeholder(R.drawable.gray_rectangle)
-                .into(postPicImageView);
+                .into(postPicImageView, new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        setupShareIntent(holder, post);
+                    }
+
+                    @Override
+                    public void onError() {
+
+                    }
+                }
+        );
     }
 
     @Override
