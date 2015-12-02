@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.codepath.instagram.R;
+import com.codepath.instagram.helpers.Utils;
 import com.codepath.instagram.models.InstagramComment;
 import com.squareup.picasso.Picasso;
 
@@ -66,7 +67,7 @@ public class InstagramCommentsAdapter extends RecyclerView.Adapter<InstagramComm
 
     private void renderComment(CommentItemHolder holder, InstagramComment comment) {
         holder.mCommentTextView.setText(
-                InstagramPostsAdapter.prependWithBlueUsername(
+                Utils.prependWithBlueUsername(
                         holder.mCommentTextView.getContext(),
                         comment.user.userName,
                         comment.text

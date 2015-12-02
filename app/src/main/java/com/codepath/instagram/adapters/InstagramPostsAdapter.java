@@ -3,18 +3,12 @@ package com.codepath.instagram.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Environment;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
-import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
-import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,9 +26,6 @@ import com.codepath.instagram.models.InstagramPost;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -113,31 +104,6 @@ public class InstagramPostsAdapter extends RecyclerView.Adapter<InstagramPostsAd
         setComments(holder, post);
     }
 
-    public static Uri getLocalBitmapUri(ImageView imageView, String uuid) {
-        // Extract Bitmap from ImageView drawable
-        Drawable drawable = imageView.getDrawable();
-        Bitmap bmp = null;
-        if (drawable instanceof BitmapDrawable){
-            bmp = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
-        } else {
-            return null;
-        }
-        // Store image to default external storage directory
-        Uri bmpUri = null;
-        try {
-            File file =  new File(Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_DOWNLOADS), "share_image_" + uuid + ".png");
-            file.getParentFile().mkdirs();
-            FileOutputStream out = new FileOutputStream(file);
-            bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
-            out.close();
-            bmpUri = Uri.fromFile(file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return bmpUri;
-    }
-
     private void setupShareIntent(final PostItemViewHolder holder, final InstagramPost post) {
         holder.mSharePostImageView.setOnClickListener(new View.OnClickListener() {
 
@@ -152,7 +118,7 @@ public class InstagramPostsAdapter extends RecyclerView.Adapter<InstagramPostsAd
                         switch (item.getItemId()) {
                             case R.id.mnuItemShare:
                                 // Get access to the URI for the bitmap
-                                Uri bmpUri = InstagramPostsAdapter.getLocalBitmapUri(holder.mPostPicImageView, post.mediaId);
+                                Uri bmpUri = Utils.getLocalBitmapUri(holder.mPostPicImageView, post.mediaId);
                                 if (bmpUri != null) {
                                     // Construct a ShareIntent with link to image
                                     Intent shareIntent = new Intent();
@@ -201,25 +167,10 @@ public class InstagramPostsAdapter extends RecyclerView.Adapter<InstagramPostsAd
             InstagramComment comment = post.comments.get(i);
 
             TextView commentView = (TextView) LinearLayout.inflate(context, R.layout.layout_item_text_comment, null);
-            commentView.setText(prependWithBlueUsername(context, comment.user.userName, comment.text));
+            commentView.setText(Utils.prependWithBlueUsername(context, comment.user.userName, comment.text));
 
             holder.mCommentsLinearLayout.addView(commentView);
         }
-    }
-
-    public static ForegroundColorSpan getBlueForegroundColorSpan(Context context) {
-        return new ForegroundColorSpan(context.getResources().getColor(R.color.blue_text));
-    }
-
-    public static SpannableStringBuilder prependWithBlueUsername(Context context, String username, CharSequence suffix) {
-        SpannableString userNamePrefix = new SpannableString(username);
-        userNamePrefix.setSpan(getBlueForegroundColorSpan(context), 0, username.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-
-        SpannableStringBuilder ssb = new SpannableStringBuilder(userNamePrefix);
-        ssb.append(" ");
-        ssb.append(suffix);
-
-        return ssb;
     }
 
     private void setPostTimestamp(PostItemViewHolder holder, InstagramPost post) {
@@ -255,7 +206,7 @@ public class InstagramPostsAdapter extends RecyclerView.Adapter<InstagramPostsAd
 
         // TODO: handle multiple mentions
         if (startIndex > -1) {
-            caption.setSpan(getBlueForegroundColorSpan(context),
+            caption.setSpan(Utils.getBlueForegroundColorSpan(context),
                     startIndex,
                     startIndex + post.user.userName.length(),
                     Spanned.SPAN_INCLUSIVE_EXCLUSIVE
@@ -263,7 +214,7 @@ public class InstagramPostsAdapter extends RecyclerView.Adapter<InstagramPostsAd
         }
 
         // set the text of the view
-        holder.mCaptionTextView.setText(prependWithBlueUsername(context, post.user.userName, caption), TextView.BufferType.NORMAL);
+        holder.mCaptionTextView.setText(Utils.prependWithBlueUsername(context, post.user.userName, caption), TextView.BufferType.NORMAL);
         holder.mCaptionTextView.setVisibility(View.VISIBLE);
     }
 
