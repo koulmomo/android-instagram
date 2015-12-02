@@ -179,7 +179,7 @@ public class InstagramPostsAdapter extends RecyclerView.Adapter<InstagramPostsAd
     }
 
     private void setLikes(PostItemViewHolder holder, InstagramPost post) {
-        holder.mLikesTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_heart, 0, 0, 0);
+        holder.mLikesTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_small_heart_filled, 0, 0, 0);
         holder.mLikesTextView.setText(Utils.formatNumberForDisplay(post.likesCount) + " likes");
     }
 
