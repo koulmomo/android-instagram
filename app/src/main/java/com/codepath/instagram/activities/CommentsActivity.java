@@ -27,6 +27,16 @@ public class CommentsActivity extends AppCompatActivity {
     private List<InstagramComment> mComments = new ArrayList<>();
     private InstagramCommentsAdapter mCommentsAdapter;
 
+    private InstagramClient instagramClient;
+
+    private InstagramClient getInstagramClient() {
+        if (instagramClient == null) {
+            instagramClient = new InstagramClient(CommentsActivity.this);
+        }
+
+        return instagramClient;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,7 +57,7 @@ public class CommentsActivity extends AppCompatActivity {
     }
 
     private void fetchComments() {
-        InstagramClient.getComments(mPostId, new JsonHttpResponseHandler() {
+        getInstagramClient().getComments(mPostId, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 List<InstagramComment> comments = Utils.decodeCommentsFromJsonResponse(response);
@@ -59,11 +69,16 @@ public class CommentsActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                super.onFailure(statusCode, headers, throwable, errorResponse);
                 Toast.makeText(CommentsActivity.this,
                         String.format("Error fetching comments for post: %s.\nStatus Code: %d", mPostId, statusCode),
                         Toast.LENGTH_LONG
                 ).show();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+
+                super.onFailure(statusCode, headers, responseString, throwable);
             }
         });
     }

@@ -29,6 +29,16 @@ public class HomeActivity extends AppCompatActivity {
     private InstagramPostsAdapter mInstagramPostsAdapter;
     private RecyclerView rvInstagramPosts;
 
+    private InstagramClient instagramClient;
+
+    private InstagramClient getInstagramClient() {
+        if (instagramClient == null) {
+            instagramClient = new InstagramClient(HomeActivity.this);
+        }
+
+        return instagramClient;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,8 +52,7 @@ public class HomeActivity extends AppCompatActivity {
         );
 
         mInstagramPostsAdapter = new InstagramPostsAdapter(this, mInstagramPosts);
-
-        fetchPosts();
+        fetchHomeFeed();
 
         // Attach the adapter to the recyclerview to populate items
         rvInstagramPosts.setAdapter(mInstagramPostsAdapter);
@@ -65,8 +74,8 @@ public class HomeActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void fetchPosts() {
-        InstagramClient.getPopularFeed(new JsonHttpResponseHandler() {
+    private void fetchPopularPosts() {
+        getInstagramClient().getPopularFeed(new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 List<InstagramPost> posts = Utils.decodePostsFromJsonResponse(response);
@@ -78,9 +87,29 @@ public class HomeActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                super.onFailure(statusCode, headers, throwable, errorResponse);
                 Toast.makeText(HomeActivity.this,
                         "Error fetching popular posts.\nStatus Code: " + statusCode,
+                        Toast.LENGTH_LONG
+                ).show();
+            }
+        });
+    }
+
+    private void fetchHomeFeed() {
+        getInstagramClient().getHomeFeed(new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                List<InstagramPost> posts = Utils.decodePostsFromJsonResponse(response);
+
+                mInstagramPosts.clear();
+                mInstagramPosts.addAll(posts);
+                mInstagramPostsAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Toast.makeText(HomeActivity.this,
+                        "Error fetching home feed.\nStatus Code: " + statusCode,
                         Toast.LENGTH_LONG
                 ).show();
             }
