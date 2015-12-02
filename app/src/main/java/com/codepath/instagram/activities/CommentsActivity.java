@@ -35,6 +35,8 @@ public class CommentsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comments);
 
+        setTitle("Comments");
+
         mPostId = getIntent().getStringExtra("postId");
 
         mCommentsRecyclerView = (RecyclerView) findViewById(R.id.rvComments);
