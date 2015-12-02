@@ -35,8 +35,6 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        fetchPosts();
-
         // Lookup the recyclerview in activity layout
         rvInstagramPosts = (RecyclerView) findViewById(R.id.rvInstagramPosts);
 
@@ -44,7 +42,9 @@ public class HomeActivity extends AppCompatActivity {
                 new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST)
         );
 
-        mInstagramPostsAdapter = new InstagramPostsAdapter(mInstagramPosts);
+        mInstagramPostsAdapter = new InstagramPostsAdapter(this, mInstagramPosts);
+
+        fetchPosts();
 
         // Attach the adapter to the recyclerview to populate items
         rvInstagramPosts.setAdapter(mInstagramPostsAdapter);
@@ -78,10 +78,6 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 List<InstagramPost> posts = Utils.decodePostsFromJsonResponse(response);
-
-                if (posts.size() < 1) {
-                    return;
-                }
 
                 mInstagramPosts.clear();
                 mInstagramPosts.addAll(posts);

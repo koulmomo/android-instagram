@@ -1,6 +1,8 @@
 package com.codepath.instagram.adapters;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
@@ -16,6 +18,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.codepath.instagram.R;
+import com.codepath.instagram.activities.CommentsActivity;
+import com.codepath.instagram.activities.HomeActivity;
 import com.codepath.instagram.helpers.DeviceDimensionsHelper;
 import com.codepath.instagram.helpers.Utils;
 import com.codepath.instagram.models.InstagramComment;
@@ -30,12 +34,8 @@ import java.util.List;
  * Created by koulmomo on 11/30/15.
  */
 public class InstagramPostsAdapter extends RecyclerView.Adapter<InstagramPostsAdapter.PostItemViewHolder> {
-    private List<InstagramPost> instagramPosts;
-    private final static String VIEW_ALL_COMMENTS_TEMPLATE = "View all %d comments";
 
-    private final static int COMMENTS_THRESHOLD = 2;
-
-    public static class PostItemViewHolder extends RecyclerView.ViewHolder {
+    public static class PostItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView mAvatarImageView;
         TextView mUserNameTextView;
         TextView mTimestampTextView;
@@ -64,10 +64,23 @@ public class InstagramPostsAdapter extends RecyclerView.Adapter<InstagramPostsAd
             mViewAllCommentsTextView = (TextView) itemView.findViewById(R.id.tvViewAllComments);
             mCommentsLinearLayout = (LinearLayout) itemView.findViewById(R.id.llComments);
         }
+
+        @Override
+        public void onClick(View v) {
+
+        }
     }
 
-    public InstagramPostsAdapter(List<InstagramPost> instagramPosts) {
+    protected List<InstagramPost> instagramPosts;
+    private final static String VIEW_ALL_COMMENTS_TEMPLATE = "View all %d comments";
+
+    private final static int COMMENTS_THRESHOLD = 2;
+
+    private Activity mParentActivity;
+
+    public InstagramPostsAdapter(Activity parent, List<InstagramPost> instagramPosts) {
         this.instagramPosts = instagramPosts;
+        mParentActivity = parent;
     }
 
     @Override
@@ -75,7 +88,6 @@ public class InstagramPostsAdapter extends RecyclerView.Adapter<InstagramPostsAd
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 
         View postView = inflater.inflate(R.layout.layout_item_post, parent, false);
-        // inflater.inflate(R.layout.layout_item_text_comment, (ViewGroup) postView.findViewById(R.id.llComments), false);
 
         return new InstagramPostsAdapter.PostItemViewHolder(postView);
     }
@@ -96,8 +108,17 @@ public class InstagramPostsAdapter extends RecyclerView.Adapter<InstagramPostsAd
         setComments(holder, post);
     }
 
-    private void setComments(PostItemViewHolder holder, InstagramPost post) {
+    private void setComments(final PostItemViewHolder holder, final InstagramPost post) {
         holder.mCommentsLinearLayout.removeAllViews();
+
+        holder.mViewAllCommentsTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent commentsIntent = new Intent(mParentActivity, CommentsActivity.class);
+                commentsIntent.putExtra("postId", post.mediaId);
+                mParentActivity.startActivity(commentsIntent);
+            }
+        });
 
         if (post.commentsCount <= COMMENTS_THRESHOLD) {
             holder.mViewAllCommentsTextView.setVisibility(View.INVISIBLE);
@@ -136,7 +157,7 @@ public class InstagramPostsAdapter extends RecyclerView.Adapter<InstagramPostsAd
     private void setPostTimestamp(PostItemViewHolder holder, InstagramPost post) {
         holder.mTimestampTextView.setText(
                 DateUtils.getRelativeTimeSpanString(
-                        post.createdTime * 1000,
+                        post.createdTime * DateUtils.SECOND_IN_MILLIS,
                         System.currentTimeMillis(),
                         DateUtils.SECOND_IN_MILLIS
                 ).toString()
