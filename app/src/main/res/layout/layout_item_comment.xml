@@ -15,20 +15,28 @@
         app:riv_corner_radius="30dp"
         android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_marginRight="12dp"
+        android:layout_marginEnd="12dp"
+        />
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true">
 
         <TextView android:id="@+id/tvComment"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:lineSpacingMultiplier="1.2"/>
         <TextView
             android:id="@+id/tvCommentTimestamp"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:textColor="@color/light_gray_text"
+            android:textSize="14sp"
+            android:fontFamily="sans-serif"/>
 
 
     </LinearLayout>
