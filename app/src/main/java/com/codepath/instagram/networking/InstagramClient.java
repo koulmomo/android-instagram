@@ -3,13 +3,8 @@ package com.codepath.instagram.networking;
 import android.content.Context;
 
 import com.codepath.instagram.helpers.Constants;
-import com.codepath.oauth.OAuthAsyncHttpClient;
 import com.codepath.oauth.OAuthBaseClient;
-import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
-
-import org.scribe.builder.api.Api;
 
 /**
  * Created by koulmomo on 12/1/15.

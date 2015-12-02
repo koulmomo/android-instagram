@@ -2,10 +2,10 @@
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent" tools:context=".HomeActivity">
 
-    <android.support.v7.widget.RecyclerView
+    <fragment
+        android:name="com.codepath.instagram.fragments.PostsFragment"
+        android:id="@+id/postsFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/rvInstagramPosts"
-        />
+        android:layout_height="wrap_content"/>
 
 </RelativeLayout>
