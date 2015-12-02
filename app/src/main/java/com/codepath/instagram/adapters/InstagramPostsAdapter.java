@@ -202,7 +202,7 @@ public class InstagramPostsAdapter extends RecyclerView.Adapter<InstagramPostsAd
 
         Context context = holder.mCommentsLinearLayout.getContext();
 
-        for (int i = 0; i < COMMENTS_THRESHOLD; i++) {
+        for (int i = 0; i < COMMENTS_THRESHOLD && i < post.comments.size(); i++) {
             InstagramComment comment = post.comments.get(i);
 
             TextView commentView = (TextView) LinearLayout.inflate(context, R.layout.layout_item_text_comment, null);
