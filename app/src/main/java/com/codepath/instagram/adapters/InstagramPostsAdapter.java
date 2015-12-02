@@ -16,10 +16,12 @@ import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -146,20 +148,35 @@ public class InstagramPostsAdapter extends RecyclerView.Adapter<InstagramPostsAd
 
             @Override
             public void onClick(View v) {
-                // Get access to the URI for the bitmap
-                Uri bmpUri = InstagramPostsAdapter.getLocalBitmapUri(holder.mPostPicImageView);
-                if (bmpUri != null) {
-                    // Construct a ShareIntent with link to image
-                    Intent shareIntent = new Intent();
-                    shareIntent.setAction(Intent.ACTION_SEND);
-                    shareIntent.putExtra(Intent.EXTRA_STREAM, bmpUri);
-                    shareIntent.setType("image/*");
-                    // Launch sharing dialog for image
-                    mParentActivity.startActivity(Intent.createChooser(shareIntent, "Share Image"));
-                } else {
-                    // ...sharing failed, handle error
-                }
+                PopupMenu popup = new PopupMenu(mParentActivity, v);
+                popup.getMenuInflater().inflate(R.menu.popup_share, popup.getMenu());
 
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.mnuItemShare:
+                                // Get access to the URI for the bitmap
+                                Uri bmpUri = InstagramPostsAdapter.getLocalBitmapUri(holder.mPostPicImageView);
+                                if (bmpUri != null) {
+                                    // Construct a ShareIntent with link to image
+                                    Intent shareIntent = new Intent();
+                                    shareIntent.setAction(Intent.ACTION_SEND);
+                                    shareIntent.putExtra(Intent.EXTRA_STREAM, bmpUri);
+                                    shareIntent.setType("image/*");
+                                    // Launch sharing dialog for image
+                                    mParentActivity.startActivity(Intent.createChooser(shareIntent, "Share Image"));
+                                } else {
+                                    // ...sharing failed, handle error
+                                }
+                                return true;
+                            default:
+                                return false;
+                        }
+                    }
+                });
+
+                popup.show();
             }
         });
     }
