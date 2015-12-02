@@ -94,6 +94,16 @@ public class Utils {
 
 
     public static Uri getLocalBitmapUri(ImageView imageView, String uuid) {
+        File imageFile = new File(
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+                String.format("share_image_%s.png", uuid)
+                );
+
+        // if we already have a file, return it
+        if (imageFile.exists()) {
+            return Uri.fromFile(imageFile);
+        }
+
         // Extract Bitmap from ImageView drawable
         Drawable drawable = imageView.getDrawable();
         Bitmap bmp = null;
@@ -102,19 +112,22 @@ public class Utils {
         } else {
             return null;
         }
+
         // Store image to default external storage directory
+
+        // make sure parents exist
+        imageFile.getParentFile().mkdirs();
         Uri bmpUri = null;
+
         try {
-            File file =  new File(Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_DOWNLOADS), "share_image_" + uuid + ".png");
-            file.getParentFile().mkdirs();
-            FileOutputStream out = new FileOutputStream(file);
+            FileOutputStream out = new FileOutputStream(imageFile);
             bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
             out.close();
-            bmpUri = Uri.fromFile(file);
+            bmpUri = Uri.fromFile(imageFile);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         return bmpUri;
     }
 
