@@ -1,7 +1,18 @@
 package com.codepath.instagram.helpers;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Environment;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
+import android.widget.ImageView;
 
+import com.codepath.instagram.R;
 import com.codepath.instagram.models.InstagramComment;
 import com.codepath.instagram.models.InstagramPost;
 import com.codepath.instagram.models.InstagramSearchTag;
@@ -12,6 +23,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -77,5 +90,59 @@ public class Utils {
             jsonArray = jsonObject.optJSONArray("data");
         }
         return jsonArray;
+    }
+
+
+    public static Uri getLocalBitmapUri(ImageView imageView, String uuid) {
+        File imageFile = new File(
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+                String.format("share_image_%s.png", uuid)
+                );
+
+        // if we already have a file, return it
+        if (imageFile.exists()) {
+            return Uri.fromFile(imageFile);
+        }
+
+        // Extract Bitmap from ImageView drawable
+        Drawable drawable = imageView.getDrawable();
+        Bitmap bmp = null;
+        if (drawable instanceof BitmapDrawable){
+            bmp = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+        } else {
+            return null;
+        }
+
+        // Store image to default external storage directory
+
+        // make sure parents exist
+        imageFile.getParentFile().mkdirs();
+        Uri bmpUri = null;
+
+        try {
+            FileOutputStream out = new FileOutputStream(imageFile);
+            bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
+            out.close();
+            bmpUri = Uri.fromFile(imageFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return bmpUri;
+    }
+
+    public static ForegroundColorSpan getBlueForegroundColorSpan(Context context) {
+        return new ForegroundColorSpan(context.getResources().getColor(R.color.blue_text));
+    }
+
+    public static SpannableStringBuilder prependWithBlueUsername(Context context, String username, CharSequence suffix) {
+        SpannableString userNamePrefix = new SpannableString(username);
+        userNamePrefix.setSpan(getBlueForegroundColorSpan(context), 0, username.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+
+        SpannableStringBuilder ssb = new SpannableStringBuilder(userNamePrefix);
+        ssb.append(" ");
+        ssb.append(suffix);
+
+        return ssb;
     }
 }
