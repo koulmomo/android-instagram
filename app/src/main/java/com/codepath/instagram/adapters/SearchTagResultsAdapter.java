@@ -51,7 +51,7 @@ public class SearchTagResultsAdapter extends RecyclerView.Adapter<SearchTagResul
     @Override
     public void onBindViewHolder(SearchTagHolder holder, int position) {
         InstagramSearchTag tag = mTags.get(position);
-        holder.mTagTV.setText(tag.tag);
+        holder.mTagTV.setText("#" + tag.tag);
         holder.mCountTV.setText(Utils.formatNumberForDisplay(tag.count));
     }
 

@@ -45,9 +45,14 @@ public class InstagramClient extends OAuthBaseClient {
         client.get(getCommentsUrl(postId), responseHandler);
     }
 
-    public void getSearchResults(String query, JsonHttpResponseHandler responseHandler) {
+    public void getUserSearchResults(String query, JsonHttpResponseHandler responseHandler) {
         RequestParams params = new RequestParams("q", query);
         client.get(getApiUrl("users/search"), params, responseHandler);
+    }
+
+    public void getTagSearchResults(String query, JsonHttpResponseHandler responseHandler) {
+        RequestParams params = new RequestParams("q", query);
+        client.get(getApiUrl("tags/search"), params, responseHandler);
     }
 
     public String getCommentsUrl(String postId) {

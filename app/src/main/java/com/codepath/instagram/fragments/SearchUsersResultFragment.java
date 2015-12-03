@@ -93,7 +93,7 @@ public class SearchUsersResultFragment extends Fragment {
                     return true;
                 }
 
-                MainApplication.getRestClient().getSearchResults(newText, new JsonHttpResponseHandler() {
+                MainApplication.getRestClient().getUserSearchResults(newText, new JsonHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                         List<InstagramUser> users = Utils.decodeUsersFromJsonResponse(response);
