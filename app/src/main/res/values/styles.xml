@@ -4,5 +4,13 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
     </style>
+    
+    <style name="HomeTabsLayout" parent="Widget.Design.TabLayout">
+        <item name="tabTextAppearance">@style/HomeTabTextAppearance</item>
+        <item name="android:background">@android:color/background_dark</item>
+    </style>
 
+    <style name="HomeTabTextAppearance" parent="TextAppearance.Design.Tab">
+        <item name="textAllCaps">false</item>
+    </style>
 </resources>

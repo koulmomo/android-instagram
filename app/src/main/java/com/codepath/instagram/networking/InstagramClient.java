@@ -5,6 +5,7 @@ import android.content.Context;
 import com.codepath.instagram.helpers.Constants;
 import com.codepath.oauth.OAuthBaseClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
 /**
  * Created by koulmomo on 12/1/15.
@@ -42,6 +43,11 @@ public class InstagramClient extends OAuthBaseClient {
     public void getComments(String postId, JsonHttpResponseHandler responseHandler) {
         // client.get(getCommentsUrl(postId), createBaseRequestParams(), responseHandler);
         client.get(getCommentsUrl(postId), responseHandler);
+    }
+
+    public void getSearchResults(String query, JsonHttpResponseHandler responseHandler) {
+        RequestParams params = new RequestParams("q", query);
+        client.get(getApiUrl("users/search"), params, responseHandler);
     }
 
     public String getCommentsUrl(String postId) {
