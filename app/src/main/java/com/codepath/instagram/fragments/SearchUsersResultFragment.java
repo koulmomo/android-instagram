@@ -6,6 +6,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
+import android.support.v7.widget.SearchView.OnQueryTextListener;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -13,16 +15,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.support.v7.widget.SearchView;
-import android.support.v7.widget.SearchView.OnQueryTextListener;
 import android.widget.Toast;
 
 import com.codepath.instagram.R;
-import com.codepath.instagram.adapters.InstagramPostsAdapter;
 import com.codepath.instagram.adapters.SearchUserResultsAdapter;
 import com.codepath.instagram.core.MainApplication;
 import com.codepath.instagram.helpers.Utils;
-import com.codepath.instagram.models.InstagramPost;
 import com.codepath.instagram.models.InstagramUser;
 import com.loopj.android.http.JsonHttpResponseHandler;
 

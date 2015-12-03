@@ -1,7 +1,6 @@
 package com.codepath.instagram.adapters;
 
 import android.app.Activity;
-import android.media.Image;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,7 +9,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.codepath.instagram.R;
-import com.codepath.instagram.models.InstagramComment;
 import com.codepath.instagram.models.InstagramUser;
 import com.squareup.picasso.Picasso;
 

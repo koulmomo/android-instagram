@@ -2,11 +2,11 @@ package com.codepath.instagram.activities;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.FragmentManager;
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +17,7 @@ import android.view.MenuItem;
 
 import com.codepath.instagram.R;
 import com.codepath.instagram.fragments.PostsFragment;
+import com.codepath.instagram.fragments.SearchFragment;
 import com.codepath.instagram.fragments.SearchUsersResultFragment;
 import com.codepath.instagram.helpers.SmartFragmentStatePagerAdapter;
 
@@ -27,8 +28,6 @@ import butterknife.ButterKnife;
 public class HomeActivity extends AppCompatActivity {
     private static final String TAG = "HomeActivity";
     public static final String TAB_POSITION_SAVE_KEY = "POSITION";
-
-    private SmartFragmentStatePagerAdapter mAdapterViewPager;
 
     private class HomeFragmentStatePagerAdapter extends SmartFragmentStatePagerAdapter {
         private final int NUM_ITEMS = 5;
@@ -53,7 +52,7 @@ public class HomeActivity extends AppCompatActivity {
                 case 0:
                     return PostsFragment.newInstance();
                 case 1:
-                    return SearchUsersResultFragment.newInstance();
+                    return SearchFragment.newInstance();
                 default:
                     return PostsFragment.newInstance();
             }
@@ -79,6 +78,8 @@ public class HomeActivity extends AppCompatActivity {
 
     @Bind(R.id.vpHomePager) ViewPager mHomeViewPager;
     @Bind(R.id.tlHomeTabs) TabLayout mHomeTabsLayout;
+
+    private SmartFragmentStatePagerAdapter mAdapterViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
