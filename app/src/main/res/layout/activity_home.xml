@@ -1,11 +1,23 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" tools:context=".HomeActivity">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".HomeActivity">
 
-    <android.support.v7.widget.RecyclerView
+    <com.codepath.instagram.helpers.NonSwipeableViewPager
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/rvInstagramPosts"
-        />
+        android:layout_height="0px"
+        android:background="@android:color/white"
+        android:id="@+id/vpHomePager" android:layout_weight="1"/>
 
-</RelativeLayout>
+    <android.support.design.widget.TabLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:id="@+id/tlHomeTabs"
+        style="@style/HomeTabsLayout"
+        app:tabMode="fixed">
+
+    </android.support.design.widget.TabLayout>
+</LinearLayout>
