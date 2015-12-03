@@ -33,7 +33,7 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class SearchTagsResultFragment extends Fragment {
+public class SearchTagsResultFragment extends Fragment implements SearchResultInterface {
     
     public SearchTagsResultFragment() {
         // Required empty public constructor
@@ -69,53 +69,29 @@ public class SearchTagsResultFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public boolean onSearchQuery(String query) {
+        if (TextUtils.isEmpty(query)) {
+            mTags.clear();
+            mTagsAdapter.notifyDataSetChanged();
+            return true;
+        }
 
-        setHasOptionsMenu(true);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_search, menu);
-
-        MenuItem searchItem = menu.findItem(R.id.action_search);
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        MainApplication.getRestClient().getTagSearchResults(query, new JsonHttpResponseHandler() {
             @Override
-            public boolean onQueryTextSubmit(String query) {
-                // perform query here
-                return false;
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                List<InstagramSearchTag> tags = Utils.decodeSearchTagsFromJsonResponse(response);
+
+                mTags.clear();
+                mTags.addAll(tags);
+                mTagsAdapter.notifyDataSetChanged();
             }
 
             @Override
-            public boolean onQueryTextChange(String newText) {
-                if (TextUtils.isEmpty(newText)) {
-                    return true;
-                }
-
-                MainApplication.getRestClient().getTagSearchResults(newText, new JsonHttpResponseHandler() {
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        List<InstagramSearchTag> tags = Utils.decodeSearchTagsFromJsonResponse(response);
-
-                        mTags.clear();
-                        mTags.addAll(tags);
-                        mTagsAdapter.notifyDataSetChanged();
-                    }
-
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                        Toast.makeText(getActivity(), "bad stuff", Toast.LENGTH_LONG).show();
-                    }
-                });
-
-                return true;
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Toast.makeText(getActivity(), "bad stuff", Toast.LENGTH_LONG).show();
             }
         });
 
-
-        super.onCreateOptionsMenu(menu, inflater);
+        return true;
     }
 }

@@ -33,7 +33,7 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class SearchUsersResultFragment extends Fragment {
+public class SearchUsersResultFragment extends Fragment implements SearchResultInterface {
 
     public SearchUsersResultFragment() {
         // Required empty public constructor
@@ -67,53 +67,29 @@ public class SearchUsersResultFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public boolean onSearchQuery(String query) {
+        if (TextUtils.isEmpty(query)) {
+            mInstagramUsers.clear();
+            mUsersAdapter.notifyDataSetChanged();
+            return true;
+        }
 
-        setHasOptionsMenu(true);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_search, menu);
-
-        MenuItem searchItem = menu.findItem(R.id.action_search);
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-
-        searchView.setOnQueryTextListener(new OnQueryTextListener() {
+        MainApplication.getRestClient().getUserSearchResults(query, new JsonHttpResponseHandler() {
             @Override
-            public boolean onQueryTextSubmit(String query) {
-                // perform query here
-                return false;
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                List<InstagramUser> users = Utils.decodeUsersFromJsonResponse(response);
+
+                mInstagramUsers.clear();
+                mInstagramUsers.addAll(users);
+                mUsersAdapter.notifyDataSetChanged();
             }
 
             @Override
-            public boolean onQueryTextChange(String newText) {
-                if (TextUtils.isEmpty(newText)) {
-                    return true;
-                }
-
-                MainApplication.getRestClient().getUserSearchResults(newText, new JsonHttpResponseHandler() {
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        List<InstagramUser> users = Utils.decodeUsersFromJsonResponse(response);
-
-                        mInstagramUsers.clear();
-                        mInstagramUsers.addAll(users);
-                        mUsersAdapter.notifyDataSetChanged();
-                    }
-
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                        Toast.makeText(getActivity(), "bad stuff", Toast.LENGTH_LONG).show();
-                    }
-                });
-
-                return true;
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Toast.makeText(getActivity(), "bad stuff", Toast.LENGTH_LONG).show();
             }
         });
 
-
-        super.onCreateOptionsMenu(menu, inflater);
+        return true;
     }
 }
