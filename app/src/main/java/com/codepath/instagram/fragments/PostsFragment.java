@@ -72,7 +72,7 @@ public class PostsFragment extends Fragment {
         // Attach the adapter to the recyclerview to populate items
         rvInstagramPosts.setAdapter(mInstagramPostsAdapter);
         rvInstagramPosts.setLayoutManager(new LinearLayoutManager(getContext()));
-
+        fetchHomeFeed();
         return view;
     }
 

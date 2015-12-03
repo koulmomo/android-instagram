@@ -1,11 +1,22 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" tools:context=".HomeActivity">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".HomeActivity">
 
-    <fragment
-        android:name="com.codepath.instagram.fragments.PostsFragment"
-        android:id="@+id/postsFragment"
+    <com.codepath.instagram.helpers.NonSwipeableViewPager
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="0px"
+        android:background="@android:color/white"
+        android:id="@+id/vpHomePager" android:layout_weight="1"/>
 
-</RelativeLayout>
+    <android.support.design.widget.TabLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:id="@+id/tlHomeTabs"
+        app:tabMode="scrollable">
+
+    </android.support.design.widget.TabLayout>
+</LinearLayout>

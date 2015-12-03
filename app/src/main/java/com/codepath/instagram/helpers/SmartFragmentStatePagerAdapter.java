@@ -19,6 +19,7 @@ public abstract class SmartFragmentStatePagerAdapter extends FragmentStatePagerA
         super(fragmentManager);
     }
 
+
     // Register the fragment when the item is instantiated
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
