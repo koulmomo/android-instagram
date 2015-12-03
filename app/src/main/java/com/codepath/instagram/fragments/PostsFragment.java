@@ -3,6 +3,7 @@ package com.codepath.instagram.fragments;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -17,8 +18,10 @@ import com.codepath.instagram.helpers.DividerItemDecoration;
 import com.codepath.instagram.helpers.Utils;
 import com.codepath.instagram.models.InstagramPost;
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.ResponseHandlerInterface;
 
 import org.apache.http.Header;
+import org.apache.http.HttpResponse;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -31,6 +34,9 @@ import static android.widget.Toast.LENGTH_LONG;
 import static android.widget.Toast.makeText;
 
 public class PostsFragment extends Fragment {
+    @Bind(R.id.srlPostsContainer)
+    SwipeRefreshLayout mPostsContainerSRL;
+
     @Bind(R.id.rvInstagramPosts) RecyclerView rvInstagramPosts;
 
     private List<InstagramPost> mInstagramPosts = new ArrayList<InstagramPost>();
@@ -72,6 +78,14 @@ public class PostsFragment extends Fragment {
         // Attach the adapter to the recyclerview to populate items
         rvInstagramPosts.setAdapter(mInstagramPostsAdapter);
         rvInstagramPosts.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        mPostsContainerSRL.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                fetchHomeFeed();
+            }
+        });
+
         fetchHomeFeed();
 
         return view;
@@ -94,11 +108,11 @@ public class PostsFragment extends Fragment {
     }
 
     public void fetchPopularPosts() {
+        mPostsContainerSRL.setRefreshing(true);
         MainApplication.getRestClient().getPopularFeed(new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 List<InstagramPost> posts = Utils.decodePostsFromJsonResponse(response);
-
                 mInstagramPosts.clear();
                 mInstagramPosts.addAll(posts);
                 mInstagramPostsAdapter.notifyDataSetChanged();
@@ -111,10 +125,17 @@ public class PostsFragment extends Fragment {
                         LENGTH_LONG
                 ).show();
             }
+
+            @Override
+            public void onFinish() {
+                super.onFinish();
+                mPostsContainerSRL.setRefreshing(false);
+            }
         });
     }
 
     public void fetchHomeFeed() {
+        mPostsContainerSRL.setRefreshing(true);
         MainApplication.getRestClient().getHomeFeed(new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -122,6 +143,7 @@ public class PostsFragment extends Fragment {
 
                 mInstagramPosts.clear();
                 mInstagramPosts.addAll(posts);
+
                 mInstagramPostsAdapter.notifyDataSetChanged();
             }
 
@@ -131,6 +153,12 @@ public class PostsFragment extends Fragment {
                         "Error fetching home feed.\nStatus Code: " + statusCode,
                         LENGTH_LONG
                 ).show();
+            }
+
+            @Override
+            public void onFinish() {
+                super.onFinish();
+                mPostsContainerSRL.setRefreshing(false);
             }
         });
     }
