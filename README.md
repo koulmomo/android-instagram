@@ -6,22 +6,25 @@ This is a Instagram Client Project.
  
 Submitted by: **Mo Kouli**
  
-Time spent: **8** hours spent in total
+Time spent: **10** hours spent in total
 
 
 ## User Stories
 
-* [x] Connect the app with the Instagram API and get real time data using the android-async-http library library.
-* [x] Show the last 2 comments for each photo
-* [x] User can view all comments for an image within a separate activity.
-* [x] User can share an image to their friends or email it to themselves.
+### Required
 
-* [ ] **OPTIONAL**: Use the Butterknife library to remove all findViewById(...) calls.
-* [ ] **OPTIONAL**: Robust error handling, check if internet is available, handle error cases, network failures.
+* [x] User can login to Instagram using OAuth login.
+* [x] User can view their own feed.
+* [x] User can search for a user by username.
+* [x] User can search for a tag.
+
+### Optional User Stories
+* [ ] Include a ProgressBar during network loading.
+* [ ] User can get a grid of photos by clicking on a search result (i.e. a user or tag).
 
 ## Video Walkthrough
+![video walkthrough from day 3](https://cloud.githubusercontent.com/assets/983861/11553140/cd83633a-9940-11e5-88fd-01eb2fbfa063.gif)
 
- ![video walkthrough](https://cloud.githubusercontent.com/assets/983861/11523398/e0ffbf78-9876-11e5-9e76-114386bddd5b.gif)
 
 ## License
 
