@@ -3,15 +3,10 @@ package com.codepath.instagram.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -21,7 +16,6 @@ import com.codepath.instagram.adapters.SearchTagResultsAdapter;
 import com.codepath.instagram.core.MainApplication;
 import com.codepath.instagram.helpers.Utils;
 import com.codepath.instagram.models.InstagramSearchTag;
-import com.codepath.instagram.models.InstagramUser;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.apache.http.Header;
@@ -59,6 +53,12 @@ public class SearchTagsResultFragment extends Fragment implements SearchResultIn
         mTagsRV.setAdapter(mTagsAdapter);
 
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.unbind(this);
     }
 
     public static Fragment newInstance() {

@@ -73,6 +73,7 @@ public class PostsFragment extends Fragment {
         rvInstagramPosts.setAdapter(mInstagramPostsAdapter);
         rvInstagramPosts.setLayoutManager(new LinearLayoutManager(getContext()));
         fetchHomeFeed();
+
         return view;
     }
 

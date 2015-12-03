@@ -18,7 +18,6 @@ import android.view.MenuItem;
 import com.codepath.instagram.R;
 import com.codepath.instagram.fragments.PostsFragment;
 import com.codepath.instagram.fragments.SearchFragment;
-import com.codepath.instagram.fragments.SearchUsersResultFragment;
 import com.codepath.instagram.helpers.SmartFragmentStatePagerAdapter;
 
 import butterknife.Bind;
