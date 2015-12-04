@@ -11,6 +11,7 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.codepath.instagram.R;
 import com.codepath.instagram.models.InstagramComment;
@@ -144,5 +145,17 @@ public class Utils {
         ssb.append(suffix);
 
         return ssb;
+    }
+
+    public static void showToast(Context context, String text, int duration) {
+        Toast.makeText(context, text, duration).show();
+    }
+
+    public static void showLongToast(Context context, String text) {
+        showToast(context, text, Toast.LENGTH_LONG);
+    }
+
+    public static void showShortToast(Context context, String text) {
+        showToast(context, text, Toast.LENGTH_SHORT);
     }
 }

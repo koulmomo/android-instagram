@@ -13,7 +13,6 @@ import com.codepath.instagram.models.InstagramPost;
 import com.codepath.instagram.models.InstagramUser;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class InstagramClientDatabase extends SQLiteOpenHelper {

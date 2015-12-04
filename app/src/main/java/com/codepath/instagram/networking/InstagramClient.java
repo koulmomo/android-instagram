@@ -9,8 +9,6 @@ import com.codepath.oauth.OAuthBaseClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
-import org.scribe.model.Token;
-
 /**
  * Created by koulmomo on 12/1/15.
  */
@@ -37,10 +35,6 @@ public class InstagramClient extends OAuthBaseClient {
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
     }
-
-//    private  RequestParams createBaseRequestParams() {
-//        return new RequestParams("client_id", REST_CONSUMER_KEY);
-//    }
 
     public void getPopularFeed(JsonHttpResponseHandler responseHandler) {
         // client.get(getPopularPostsUrl(), createBaseRequestParams(), responseHandler);

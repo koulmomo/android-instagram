@@ -1,12 +1,9 @@
 package com.codepath.instagram.fragments;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
@@ -25,14 +22,10 @@ import com.codepath.instagram.helpers.DividerItemDecoration;
 import com.codepath.instagram.helpers.Utils;
 import com.codepath.instagram.models.InstagramPost;
 import com.codepath.instagram.models.InstagramPosts;
-import com.codepath.instagram.networking.InstagramClient;
-import com.codepath.instagram.persistence.InstagramClientDatabase;
 import com.codepath.instagram.services.HomeService;
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.ResponseHandlerInterface;
 
 import org.apache.http.Header;
-import org.apache.http.HttpResponse;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -42,29 +35,51 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 import static android.widget.Toast.LENGTH_LONG;
-import static android.widget.Toast.makeText;
 
 public class PostsFragment extends Fragment {
     private BroadcastReceiver mReveiver = new BroadcastReceiver() {
+        private List<InstagramPost> parsePostsFromService(Context context, Intent intent) {
+            InstagramPosts postsWrapper = (InstagramPosts) intent.getSerializableExtra("resultValue");
+
+            if (postsWrapper == null) {
+                Utils.showLongToast(context, "Intent said everything was ok but postsWrapper was null");
+                return null;
+            }
+
+            if (postsWrapper.posts == null) {
+                Utils.showLongToast(context, "Intent said everything was ok but postsWrapper.posts was null");
+            }
+
+            return postsWrapper.posts;
+        }
+
         @Override
         public void onReceive(Context context, Intent intent) {
             mPostsContainerSRL.setRefreshing(false);
-            switch (intent.getIntExtra("resultCode", -1)) {
-                case Activity.RESULT_OK:
-                    InstagramPosts postsWrapper = (InstagramPosts) intent.getSerializableExtra("resultValue");
 
-                    if (postsWrapper == null || postsWrapper.posts == null) {
-                        Toast.makeText(
-                                context,
-                                "Intent said everything was ok but either postsWrapper OR postsWrapper.posts was null",
-                                Toast.LENGTH_LONG
-                        ).show();
+            switch (getResultCode()) {
+                case HomeService.FETCH_HOME_POSTS_FAIL:
+                    Utils.showLongToast(context, String.format(
+                            "HomeService returned network error with statusCode %d",
+                            intent.getIntExtra("statusCode", 502)
+                    ));
+                    return;
+
+                case HomeService.FETCH_HOME_POSTS_OK:
+                    if (!intent.getBooleanExtra("wasFromNetworkCall", true)) {
+                        Utils.showShortToast(context, "Posts loaded from local db");
+                    }
+
+                    List <InstagramPost> posts = parsePostsFromService(context, intent);
+
+                    if (posts == null) {
                         return;
                     }
 
                     mInstagramPosts.clear();
-                    mInstagramPosts.addAll(postsWrapper.posts);
+                    mInstagramPosts.addAll(posts);
                     mInstagramPostsAdapter.notifyDataSetChanged();
+                    return;
             }
         }
     };
