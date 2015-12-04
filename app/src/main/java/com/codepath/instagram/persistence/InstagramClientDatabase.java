@@ -13,6 +13,7 @@ import com.codepath.instagram.models.InstagramPost;
 import com.codepath.instagram.models.InstagramUser;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class InstagramClientDatabase extends SQLiteOpenHelper {
@@ -23,11 +24,21 @@ public class InstagramClientDatabase extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
 
     // Tables
-    private static final String TABLE_POSTS = "posts";
-    private static final String TABLE_USERS = "users";
-    private static final String TABLE_IMAGES = "images";
-    private static final String TABLE_COMMENTS = "comments";
-    private static final String TABLE_POST_COMMENTS = "postComments";
+    private static final String[] TABLES = new String[] {
+            "users",
+            "images",
+            "posts",
+            "comments",
+            "postComments"
+    };
+
+    private static final String TABLE_USERS = TABLES[0];
+    private static final String TABLE_IMAGES = TABLES[1];
+    private static final String TABLE_POSTS = TABLES[2];
+    private static final String TABLE_COMMENTS = TABLES[3];
+    private static final String TABLE_POST_COMMENTS = TABLES[4];
+
+
 
     // Constraints
     private static final String CONSTRAINT_POST_COMMENTS_PK = "postComments_pk";
@@ -148,17 +159,99 @@ public class InstagramClientDatabase extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // TODO: Implement this method
+        if (oldVersion == newVersion) {
+            return;
+        }
+
+        for (String table: TABLES) {
+            db.execSQL(String.format("DROP TABLE IF EXISTS %1$s", table));
+        }
+
+        onCreate(db);
     }
 
     public void emptyAllTables() {
-        // TODO: Implement this method to delete all rows from all tables
+        SQLiteDatabase db = getWritableDatabase();
+
+        db.beginTransaction();
+
+        try {
+            for (int i = (TABLES.length - 1) ; i >= 0 ; i--) {
+                db.delete(TABLES[i], null, null);
+            }
+
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+            Log.d(TAG, "Error while trying to delete all tables");
+            e.printStackTrace();
+        } finally {
+            db.endTransaction();
+        }
+    }
+
+    private long addInstagramPost(InstagramPost post) {
+        if (post == null) {
+            throw new IllegalArgumentException(String.format("attempted to add null post to %s", DATABASE_NAME));
+        }
+
+        long postId = -1;
+        SQLiteDatabase db = getWritableDatabase();
+
+        db.beginTransaction();
+        try {
+            long userId = addorUpdateUser(post.user);
+
+            if (userId < 0) {
+                throw new Exception(String.format("could not add user (%s) to db", post.user.userId));
+            }
+
+            long imageId = addImage(post.image);
+
+            if (imageId < 0) {
+                throw new Exception(String.format("could not add image (%s) to db", post.image.imageUrl));
+            }
+
+            ContentValues postValues = new ContentValues();
+            postValues.put(KEY_POST_MEDIA_ID, post.mediaId);
+            postValues.put(KEY_POST_USER_ID_FK, userId);
+            postValues.put(KEY_POST_IMAGE_ID_FK, imageId);
+            postValues.put(KEY_POST_CAPTION, post.caption);
+            postValues.put(KEY_POST_LIKES_COUNT, post.likesCount);
+            postValues.put(KEY_POST_COMMENTS_COUNT, post.commentsCount);
+            postValues.put(KEY_POST_CREATED_TIME, post.createdTime);
+
+            postId = db.insert(TABLE_POSTS, null, postValues);
+
+            if (post.comments != null) {
+                for (InstagramComment comment: post.comments) {
+                    addComment(comment, postId);
+                }
+            }
+
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+            Log.d(TAG, String.format("Error while trying to add Instagram Post: %s", post.mediaId));
+            e.printStackTrace();
+        } finally {
+            db.endTransaction();
+        }
+
+        return postId;
     }
 
     public void addInstagramPosts(List<InstagramPost> posts) {
         // TODO: Implement this method
         // Take a look at the helper methods addImage, addComment, etc as you implement this method
         // It's also a good idea to do this work in a transaction
+
+        if (posts == null) {
+            throw new IllegalArgumentException(String.format("Attempting to add null posts to database %s", DATABASE_NAME));
+        }
+
+        for (InstagramPost post :
+                posts) {
+            addInstagramPost(post);
+        }
     }
 
     // Poor man's "upsert".

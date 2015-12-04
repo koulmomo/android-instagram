@@ -1,6 +1,8 @@
 package com.codepath.instagram.fragments;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -17,6 +19,8 @@ import com.codepath.instagram.core.MainApplication;
 import com.codepath.instagram.helpers.DividerItemDecoration;
 import com.codepath.instagram.helpers.Utils;
 import com.codepath.instagram.models.InstagramPost;
+import com.codepath.instagram.networking.InstagramClient;
+import com.codepath.instagram.persistence.InstagramClientDatabase;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.ResponseHandlerInterface;
 
@@ -108,11 +112,11 @@ public class PostsFragment extends Fragment {
     }
 
     public void fetchPopularPosts() {
-        mPostsContainerSRL.setRefreshing(true);
         MainApplication.getRestClient().getPopularFeed(new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 List<InstagramPost> posts = Utils.decodePostsFromJsonResponse(response);
+
                 mInstagramPosts.clear();
                 mInstagramPosts.addAll(posts);
                 mInstagramPostsAdapter.notifyDataSetChanged();
@@ -135,11 +139,27 @@ public class PostsFragment extends Fragment {
     }
 
     public void fetchHomeFeed() {
+        InstagramClient restClient = MainApplication.getRestClient();
+
+        if (!restClient.isNetworkAvailable()) {
+            List<InstagramPost> posts =  MainApplication.getDBClient().getAllInstagramPosts();
+            mInstagramPosts.clear();
+            mInstagramPosts.addAll(posts);
+            mInstagramPostsAdapter.notifyDataSetChanged();
+
+            mPostsContainerSRL.setRefreshing(false);
+            return;
+        }
+
         mPostsContainerSRL.setRefreshing(true);
-        MainApplication.getRestClient().getHomeFeed(new JsonHttpResponseHandler() {
+        restClient.getHomeFeed(new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 List<InstagramPost> posts = Utils.decodePostsFromJsonResponse(response);
+
+                InstagramClientDatabase db = MainApplication.getDBClient();
+                db.emptyAllTables();
+                db.addInstagramPosts(posts);
 
                 mInstagramPosts.clear();
                 mInstagramPosts.addAll(posts);
