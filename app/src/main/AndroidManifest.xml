@@ -42,6 +42,9 @@
         <activity android:name=".activities.HomeActivity"/>
 
         <activity android:name=".activities.CommentsActivity" />
+
+        <service android:name=".services.HomeService"
+            android:exported="false"/>
     </application>
 
 </manifest>

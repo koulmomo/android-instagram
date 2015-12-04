@@ -1,10 +1,15 @@
 package com.codepath.instagram.fragments;
 
+import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,8 +24,10 @@ import com.codepath.instagram.core.MainApplication;
 import com.codepath.instagram.helpers.DividerItemDecoration;
 import com.codepath.instagram.helpers.Utils;
 import com.codepath.instagram.models.InstagramPost;
+import com.codepath.instagram.models.InstagramPosts;
 import com.codepath.instagram.networking.InstagramClient;
 import com.codepath.instagram.persistence.InstagramClientDatabase;
+import com.codepath.instagram.services.HomeService;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.ResponseHandlerInterface;
 
@@ -38,6 +45,31 @@ import static android.widget.Toast.LENGTH_LONG;
 import static android.widget.Toast.makeText;
 
 public class PostsFragment extends Fragment {
+    private BroadcastReceiver mReveiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            mPostsContainerSRL.setRefreshing(false);
+            switch (intent.getIntExtra("resultCode", -1)) {
+                case Activity.RESULT_OK:
+                    InstagramPosts postsWrapper = (InstagramPosts) intent.getSerializableExtra("resultValue");
+
+                    if (postsWrapper == null || postsWrapper.posts == null) {
+                        Toast.makeText(
+                                context,
+                                "Intent said everything was ok but either postsWrapper OR postsWrapper.posts was null",
+                                Toast.LENGTH_LONG
+                        ).show();
+                        return;
+                    }
+
+                    mInstagramPosts.clear();
+                    mInstagramPosts.addAll(postsWrapper.posts);
+                    mInstagramPostsAdapter.notifyDataSetChanged();
+            }
+        }
+    };
+
+
     @Bind(R.id.srlPostsContainer)
     SwipeRefreshLayout mPostsContainerSRL;
 
@@ -57,6 +89,7 @@ public class PostsFragment extends Fragment {
         return fragment;
     }
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,6 +100,9 @@ public class PostsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        LocalBroadcastManager.getInstance(this.getContext())
+                .registerReceiver(mReveiver, new IntentFilter(HomeService.ACTION));
 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_posts, container, false);
@@ -99,6 +135,7 @@ public class PostsFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         ButterKnife.unbind(this);
+        LocalBroadcastManager.getInstance(this.getContext()).unregisterReceiver(mReveiver);
     }
 
     @Override
@@ -139,47 +176,6 @@ public class PostsFragment extends Fragment {
     }
 
     public void fetchHomeFeed() {
-        InstagramClient restClient = MainApplication.getRestClient();
-
-        if (!restClient.isNetworkAvailable()) {
-            List<InstagramPost> posts =  MainApplication.getDBClient().getAllInstagramPosts();
-            mInstagramPosts.clear();
-            mInstagramPosts.addAll(posts);
-            mInstagramPostsAdapter.notifyDataSetChanged();
-
-            mPostsContainerSRL.setRefreshing(false);
-            return;
-        }
-
-        mPostsContainerSRL.setRefreshing(true);
-        restClient.getHomeFeed(new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                List<InstagramPost> posts = Utils.decodePostsFromJsonResponse(response);
-
-                InstagramClientDatabase db = MainApplication.getDBClient();
-                db.emptyAllTables();
-                db.addInstagramPosts(posts);
-
-                mInstagramPosts.clear();
-                mInstagramPosts.addAll(posts);
-
-                mInstagramPostsAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                makeText(PostsFragment.this.getContext(),
-                        "Error fetching home feed.\nStatus Code: " + statusCode,
-                        LENGTH_LONG
-                ).show();
-            }
-
-            @Override
-            public void onFinish() {
-                super.onFinish();
-                mPostsContainerSRL.setRefreshing(false);
-            }
-        });
+        getActivity().startService(new Intent(getContext(), HomeService.class));
     }
 }

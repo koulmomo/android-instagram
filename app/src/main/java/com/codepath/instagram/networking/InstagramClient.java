@@ -9,6 +9,8 @@ import com.codepath.oauth.OAuthBaseClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
+import org.scribe.model.Token;
+
 /**
  * Created by koulmomo on 12/1/15.
  */
@@ -46,7 +48,11 @@ public class InstagramClient extends OAuthBaseClient {
     }
 
     public void getHomeFeed(JsonHttpResponseHandler responseHandler) {
-        client.get(getApiUrl("users/self/feed"), responseHandler);
+        client.get(getHomeFeedUrl(), responseHandler);
+    }
+
+    public String getHomeFeedUrl() {
+        return getApiUrl("users/self/feed");
     }
 
     public void getComments(String postId, JsonHttpResponseHandler responseHandler) {
@@ -66,6 +72,10 @@ public class InstagramClient extends OAuthBaseClient {
 
     public String getCommentsUrl(String postId) {
         return getApiUrl(String.format("media/%s/comments", postId));
+    }
+
+    public String getToken() {
+       return this.client.getAccessToken().getToken();
     }
 
     public String getPopularPostsUrl() {
