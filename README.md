@@ -21,7 +21,7 @@ Time spent: **7** hours spent in total
 * [ ] Add the ability for users to comment on a post.
 
 ## Video Walkthrough
-![video walkthrough from day 4]()
+![video walkthrough from day 4](https://cloud.githubusercontent.com/assets/983861/11581589/6bbdba84-99f8-11e5-97e2-e86cd905d4d4.gif)
 
 
 ## License
