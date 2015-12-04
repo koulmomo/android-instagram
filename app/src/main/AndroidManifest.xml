@@ -12,6 +12,7 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:name=".core.MainApplication"
@@ -41,6 +42,9 @@
         <activity android:name=".activities.HomeActivity"/>
 
         <activity android:name=".activities.CommentsActivity" />
+
+        <service android:name=".services.HomeService"
+            android:exported="false"/>
     </application>
 
 </manifest>

@@ -1,6 +1,8 @@
 package com.codepath.instagram.networking;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 
 import com.codepath.instagram.helpers.Constants;
 import com.codepath.oauth.OAuthBaseClient;
@@ -27,9 +29,12 @@ public class InstagramClient extends OAuthBaseClient {
         );
     }
 
-//    private  RequestParams createBaseRequestParams() {
-//        return new RequestParams("client_id", REST_CONSUMER_KEY);
-//    }
+    public boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+    }
 
     public void getPopularFeed(JsonHttpResponseHandler responseHandler) {
         // client.get(getPopularPostsUrl(), createBaseRequestParams(), responseHandler);
@@ -37,7 +42,11 @@ public class InstagramClient extends OAuthBaseClient {
     }
 
     public void getHomeFeed(JsonHttpResponseHandler responseHandler) {
-        client.get(getApiUrl("users/self/feed"), responseHandler);
+        client.get(getHomeFeedUrl(), responseHandler);
+    }
+
+    public String getHomeFeedUrl() {
+        return getApiUrl("users/self/feed");
     }
 
     public void getComments(String postId, JsonHttpResponseHandler responseHandler) {
@@ -57,6 +66,10 @@ public class InstagramClient extends OAuthBaseClient {
 
     public String getCommentsUrl(String postId) {
         return getApiUrl(String.format("media/%s/comments", postId));
+    }
+
+    public String getToken() {
+       return this.client.getAccessToken().getToken();
     }
 
     public String getPopularPostsUrl() {

@@ -6,24 +6,22 @@ This is a Instagram Client Project.
  
 Submitted by: **Mo Kouli**
  
-Time spent: **10** hours spent in total
+Time spent: **7** hours spent in total
 
 
 ## User Stories
 
 ### Required
 
-* [x] User can login to Instagram using OAuth login.
-* [x] User can view their own feed.
-* [x] User can search for a user by username.
-* [x] User can search for a tag.
+* [x] Add pull-to-refresh for the home feed with SwipeRefreshLayout.
+* [x] User can open the Instagram client offline and see last loaded feed.
+* [x] Create a background service to make the network request, load items into the DB and populate the view (for the user's home feed).
 
 ### Optional User Stories
-* [ ] Include a ProgressBar during network loading.
-* [ ] User can get a grid of photos by clicking on a search result (i.e. a user or tag).
+* [ ] Add the ability for users to comment on a post.
 
 ## Video Walkthrough
-![video walkthrough from day 3](https://cloud.githubusercontent.com/assets/983861/11553140/cd83633a-9940-11e5-88fd-01eb2fbfa063.gif)
+![video walkthrough from day 4]()
 
 
 ## License
