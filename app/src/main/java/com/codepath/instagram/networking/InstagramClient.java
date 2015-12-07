@@ -8,6 +8,7 @@ import com.codepath.instagram.helpers.Constants;
 import com.codepath.oauth.OAuthBaseClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.squareup.phrase.Phrase;
 
 /**
  * Created by koulmomo on 12/1/15.
@@ -66,6 +67,14 @@ public class InstagramClient extends OAuthBaseClient {
 
     public String getCommentsUrl(String postId) {
         return getApiUrl(String.format("media/%s/comments", postId));
+    }
+
+    public String getUserProfileUrl(String user) {
+        return getApiUrl(Phrase.from("users/{user_id}").put("user_id", user).format().toString());
+    }
+
+    public String getSelfUserProfileUrl() {
+        return getUserProfileUrl("self");
     }
 
     public String getToken() {

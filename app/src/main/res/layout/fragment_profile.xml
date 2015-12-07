@@ -1,0 +1,71 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.codepath.instagram.fragments.ProfileFragment">
+
+    <LinearLayout
+        android:padding="14dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- first row that contains profile info -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.makeramen.roundedimageview.RoundedImageView
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/ivAvatar"
+                android:scaleType="fitCenter"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                app:riv_corner_radius="44dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginRight="14dp"
+                android:layout_marginBottom="14dp"/>
+
+            <TextView android:id="@+id/tvMediaPostCount"
+                android:layout_toRightOf="@+id/ivAvatar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <TextView android:text="posts"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tvMediaPostCount"/>
+
+            <TextView android:id="@+id/tvFollowerCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/tvMediaPostCount"/>
+            <TextView android:text="followers"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tvFollowerCount"/>
+
+            <TextView android:id="@+id/tvFollowCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/tvFollowerCount"/>
+            <TextView android:text="following"
+                android:layout_width="wrap_content"
+                android:layout_below="@id/tvFollowCount"
+                android:layout_height="wrap_content"/>
+
+            <TextView android:id="@+id/tvFullName"
+                android:layout_below="@+id/ivAvatar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView android:id="@+id/tvBio"
+                android:layout_below="@+id/tvFullName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </RelativeLayout>
+    </LinearLayout>
+
+</FrameLayout>

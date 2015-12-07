@@ -17,6 +17,7 @@ import android.view.MenuItem;
 
 import com.codepath.instagram.R;
 import com.codepath.instagram.fragments.PostsFragment;
+import com.codepath.instagram.fragments.ProfileFragment;
 import com.codepath.instagram.fragments.SearchFragment;
 import com.codepath.instagram.helpers.SmartFragmentStatePagerAdapter;
 
@@ -29,7 +30,6 @@ public class HomeActivity extends AppCompatActivity {
     public static final String TAB_POSITION_SAVE_KEY = "POSITION";
 
     private class HomeFragmentStatePagerAdapter extends SmartFragmentStatePagerAdapter {
-        private final int NUM_ITEMS = 5;
         private final int[] imageResId = new int[] {
                 R.drawable.ic_home,
                 R.drawable.ic_search,
@@ -37,6 +37,8 @@ public class HomeActivity extends AppCompatActivity {
                 R.drawable.ic_notifs,
                 R.drawable.ic_profile
         };
+
+        private final int NUM_ITEMS = imageResId.length;
 
         private Context mContext;
 
@@ -52,6 +54,9 @@ public class HomeActivity extends AppCompatActivity {
                     return PostsFragment.newInstance();
                 case 1:
                     return SearchFragment.newInstance();
+
+                case 4:
+                    return ProfileFragment.newInstance("self");
                 default:
                     return PostsFragment.newInstance();
             }

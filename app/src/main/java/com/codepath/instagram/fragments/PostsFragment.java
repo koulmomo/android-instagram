@@ -22,7 +22,7 @@ import com.codepath.instagram.helpers.DividerItemDecoration;
 import com.codepath.instagram.helpers.Utils;
 import com.codepath.instagram.models.InstagramPost;
 import com.codepath.instagram.models.InstagramPosts;
-import com.codepath.instagram.services.HomeService;
+import com.codepath.instagram.services.LoadHomeFeedService;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.apache.http.Header;
@@ -58,14 +58,14 @@ public class PostsFragment extends Fragment {
             mPostsContainerSRL.setRefreshing(false);
 
             switch (getResultCode()) {
-                case HomeService.FETCH_HOME_POSTS_FAIL:
+                case LoadHomeFeedService.FETCH_HOME_POSTS_FAIL:
                     Utils.showLongToast(context, String.format(
-                            "HomeService returned network error with statusCode %d",
+                            "LoadHomeFeedService returned network error with statusCode %d",
                             intent.getIntExtra("statusCode", 502)
                     ));
                     return;
 
-                case HomeService.FETCH_HOME_POSTS_OK:
+                case LoadHomeFeedService.FETCH_HOME_POSTS_OK:
                     if (!intent.getBooleanExtra("wasFromNetworkCall", true)) {
                         Utils.showShortToast(context, "Posts loaded from local db");
                     }
@@ -83,7 +83,6 @@ public class PostsFragment extends Fragment {
             }
         }
     };
-
 
     @Bind(R.id.srlPostsContainer)
     SwipeRefreshLayout mPostsContainerSRL;
@@ -117,7 +116,7 @@ public class PostsFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         LocalBroadcastManager.getInstance(this.getContext())
-                .registerReceiver(mReveiver, new IntentFilter(HomeService.ACTION));
+                .registerReceiver(mReveiver, new IntentFilter(LoadHomeFeedService.ACTION));
 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_posts, container, false);
@@ -191,6 +190,6 @@ public class PostsFragment extends Fragment {
     }
 
     public void fetchHomeFeed() {
-        getActivity().startService(new Intent(getContext(), HomeService.class));
+        getActivity().startService(new Intent(getContext(), LoadHomeFeedService.class));
     }
 }

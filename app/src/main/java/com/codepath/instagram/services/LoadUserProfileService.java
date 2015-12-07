@@ -8,6 +8,7 @@ import com.codepath.instagram.core.MainApplication;
 import com.codepath.instagram.helpers.Utils;
 import com.codepath.instagram.models.InstagramPost;
 import com.codepath.instagram.models.InstagramPosts;
+import com.codepath.instagram.models.InstagramUser;
 import com.codepath.instagram.networking.InstagramClient;
 import com.codepath.instagram.persistence.InstagramClientDatabase;
 import com.loopj.android.http.AsyncHttpClient;
@@ -17,6 +18,7 @@ import com.loopj.android.http.SyncHttpClient;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -24,27 +26,27 @@ import java.util.List;
 /**
  * Created by koulmomo on 12/3/15.
  */
-public class HomeService extends IntentService {
-    public static final String ACTION = "com.codepath.instagram.services.HomeService";
+public class LoadUserProfileService extends IntentService {
+    public static final String ACTION = "com.codepath.instagram.services.LoadUserProfileService";
 
-    public static final int FETCH_HOME_POSTS_OK = 0;
-    public static final int FETCH_HOME_POSTS_FAIL = 1;
+    public static final int FETCH_USER_PROFILE_OK = 0;
+    public static final int FETCH_USER_PROFILE_FAIL = 1;
 
     private AsyncHttpClient mClient = new SyncHttpClient();
 
-    public HomeService() {
-        super("InstagramHomeService");
+    public LoadUserProfileService() {
+        super("LoadUserProfileService");
     }
 
-    private void broadCastSuccess(List<InstagramPost> posts, boolean wasFromNetworkCall) {
-        Intent i = setResultCode(new Intent(ACTION), FETCH_HOME_POSTS_OK);
-        i.putExtra("resultValue", new InstagramPosts(posts));
+    private void broadCastSuccess(InstagramUser user, boolean wasFromNetworkCall) {
+        Intent i = setResultCode(new Intent(ACTION), FETCH_USER_PROFILE_OK);
+        i.putExtra("user", user);
         i.putExtra("wasFromNetworkCall", wasFromNetworkCall);
         LocalBroadcastManager.getInstance(this).sendBroadcast(i);
     }
 
     private void broadcastFailure(int statusCode) {
-        Intent i = setResultCode(new Intent(ACTION), FETCH_HOME_POSTS_FAIL);
+        Intent i = setResultCode(new Intent(ACTION), FETCH_USER_PROFILE_FAIL);
         i.putExtra("isError", true);
         i.putExtra("statusCode", statusCode);
 
@@ -60,23 +62,17 @@ public class HomeService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         InstagramClient asyncRestClient = MainApplication.getRestClient();
 
-        if (!asyncRestClient.isNetworkAvailable()) {
-            broadCastSuccess(MainApplication.getDBClient().getAllInstagramPosts(), false);
-            return;
-        }
-
         mClient.get(this,
-                asyncRestClient.getHomeFeedUrl(),
+                asyncRestClient.getUserProfileUrl(intent.getStringExtra("userId")),
                 new RequestParams("access_token", asyncRestClient.getToken()),
                 new JsonHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        List<InstagramPost> posts = Utils.decodePostsFromJsonResponse(response);
-
-                        InstagramClientDatabase db = MainApplication.getDBClient();
-                        db.emptyAllTables();
-                        db.addInstagramPosts(posts);
-                        broadCastSuccess(posts, true);
+                        try {
+                            broadCastSuccess(InstagramUser.fromJson(response.getJSONObject("data")), true);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
 
                     @Override

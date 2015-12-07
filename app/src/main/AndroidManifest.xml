@@ -19,13 +19,12 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
-
         <activity android:name=".activities.LoginActivity">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
+
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
-
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -33,18 +32,19 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:scheme="oauth"
                     android:host="codepath.com"
-                    />
+                    android:scheme="oauth" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".activities.HomeActivity"/>
-
+        <activity android:name=".activities.HomeActivity" />
         <activity android:name=".activities.CommentsActivity" />
 
-        <service android:name=".services.HomeService"
-            android:exported="false"/>
+        <service
+            android:name=".services.LoadHomeFeedService"
+            android:exported="false" />
+        <service
+            android:name=".services.LoadUserProfileService"
+            android:exported="false"></service>
     </application>
 
 </manifest>
